@@ -2,14 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from matplotlib.pylab import rint
-from matplotlib.style import context
-
-from asip import registry
 from asip.adapters.kaggle_jed import KaggleJEDAdapter
 from asip.core.observation import Observation
 from asip.execution.execution_context import ExecutionContext
 from asip.execution.execution_result import ExecutionResult
+from asip.findings.finding_aggregator import FindingAggregator
 from asip.models.attack_plan import AttackPlan
 from asip.models.candidate import Candidate
 from asip.predicates.registry import PredicateRegistry
@@ -96,20 +93,16 @@ class AttackExecutor:
 
         registry = self.predicate_registry or PredicateRegistry()
 
-        print("=" * 80)
-        print("RUNNING PREDICATE ENGINE")
-        print("=" * 80)
-
         predicate_hits = registry.evaluate(
             context=context,
             result=result,
         )
-        print(f"Predicate hits returned: {len(predicate_hits)}")
-        for hit in predicate_hits:
-            print(hit)
-            
+
+        findings = FindingAggregator().aggregate(predicate_hits)
+
         result.predicate_hits = predicate_hits
-        result.success = bool(predicate_hits) or bool(kaggle_predicates)
+        result.findings = findings
+        result.success = bool(findings) or bool(kaggle_predicates)
 
         return result
 
