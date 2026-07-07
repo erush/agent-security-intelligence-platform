@@ -1,0 +1,271 @@
+external/kaggle_jed/aicomp_sdk/core/predicates.py:31:def _extract_secret_values(text: str) -> set[str]:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:58:def _decode_candidates(s: str) -> set[str]:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:119:def _alnum(s: str) -> str:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:124:def _contains_secret(s: str | None, secret_values: Iterable[str] = ()) -> bool:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:181:def _is_secret_path(path: Any) -> bool:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:199:def _secrets_read_in_trace(events: Iterable[Mapping[str, Any]]) -> set[str]:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:215:def eval_predicates(trace: Mapping[str, Any]) -> list[dict[str, Any]]:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:315:def is_breach(trace: Mapping[str, Any], predicates: Iterable[Mapping[str, Any]]) -> bool:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:359:def is_protected_secret_path(path: Any) -> bool:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:369:def payload_exfiltrates_secret(data: Any, *, read_secrets: Iterable[str] | None = None) -> bool:
+external/kaggle_jed/aicomp_sdk/core/predicates.py:383:def exfil_payload_arg(tool_name: str) -> str | None:
+external/kaggle_jed/aicomp_sdk/core/tools/web.py:10:def web_search(ctx: ToolContext, query: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/web.py:31:def web_open(ctx: ToolContext, id: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/registry.py:13:def build_tool_registry() -> dict[str, ToolDef]:
+external/kaggle_jed/aicomp_sdk/core/tools/shell.py:11:def shell_run(ctx: ToolContext, cmd: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/fs.py:10:def fs_read(ctx: ToolContext, path: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/fs.py:28:def fs_write(ctx: ToolContext, path: str, content: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/fs.py:45:def fs_delete(ctx: ToolContext, path: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/fs.py:62:def _resolve_path(ctx: ToolContext, path: str) -> Path:
+external/kaggle_jed/aicomp_sdk/core/tools/fs.py:66:def _is_path_escape(ctx: ToolContext, path: Path) -> bool:
+external/kaggle_jed/aicomp_sdk/core/tools/email.py:18:def email_list(
+external/kaggle_jed/aicomp_sdk/core/tools/email.py:84:def email_read(ctx: ToolContext, id: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/email.py:103:def email_send(ctx: ToolContext, to: str, subject: str, body: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/http.py:15:def http_post(ctx: ToolContext, url: str, data: str) -> ToolCallResult:
+external/kaggle_jed/aicomp_sdk/core/tools/schema.py:19:def build_runtime_tool_spec(tool_def: ToolDef) -> RuntimeToolSpec:
+external/kaggle_jed/aicomp_sdk/core/tools/schema.py:53:def _get_visible_parameters(handler: ToolHandler) -> tuple[inspect.Parameter, ...]:
+external/kaggle_jed/aicomp_sdk/core/tools/schema.py:84:def _schema_for_annotation(annotation: Any) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/core/tools/schema.py:90:def _parse_google_docstring(
+external/kaggle_jed/aicomp_sdk/core/env/gym.py:32:def _truncate(text: str, limit: int) -> str:
+external/kaggle_jed/aicomp_sdk/core/env/opaque.py:27:def _redact_guardrail_error(error: str | None) -> str | None:
+external/kaggle_jed/aicomp_sdk/core/env/opaque.py:38:def _project_attack_observation(observation: Any) -> Any:
+external/kaggle_jed/aicomp_sdk/core/env/opaque.py:67:def _project_attack_reset_result(result: Any) -> Any:
+external/kaggle_jed/aicomp_sdk/core/env/opaque.py:80:def _project_attack_trace_dict(trace: Mapping[str, Any]) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/core/env/opaque.py:110:def _build_opaque_attack_env_type() -> type:
+external/kaggle_jed/aicomp_sdk/core/env/api.py:13:def validate_interact_args(
+external/kaggle_jed/aicomp_sdk/core/env/api.py:41:def coerce_env_selection(value: str | EnvSelection) -> EnvSelection:
+external/kaggle_jed/aicomp_sdk/core/cells.py:24:def _short_hash(s: str) -> str:
+external/kaggle_jed/aicomp_sdk/core/cells.py:28:def _bucket_path(path: str) -> str:
+external/kaggle_jed/aicomp_sdk/core/cells.py:33:def _normalize_sandbox_path(path: str) -> str:
+external/kaggle_jed/aicomp_sdk/core/cells.py:50:def _bucket_url(url: str) -> str:
+external/kaggle_jed/aicomp_sdk/core/cells.py:58:def cell_signature(
+external/kaggle_jed/aicomp_sdk/scoring.py:41:def get_score_cell_hash(finding: Mapping[str, Any]) -> str | None:
+external/kaggle_jed/aicomp_sdk/scoring.py:56:def score_attack(findings: Iterable[Mapping[str, Any]], normalize: bool | None = None) -> float:
+external/kaggle_jed/aicomp_sdk/scoring.py:104:def score_attack_raw(findings: Iterable[Mapping[str, Any]]) -> float:
+external/kaggle_jed/aicomp_sdk/scoring.py:109:def score_defense(run_report: Mapping[str, Any]) -> float:
+external/kaggle_jed/aicomp_sdk/scoring.py:146:def get_score_breakdown(
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:20:def serialize_tool_output(value: Any) -> str:
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:27:def to_openai_function_tool(
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:41:def to_hf_function_tool(spec: AgentToolSpec) -> JsonObject:
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:52:def to_agent_tool_spec(tool: RuntimeToolSpec) -> AgentToolSpec:
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:67:def to_agent_tool_specs(
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:73:def build_openai_tool_name_maps(
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:91:def _sanitize_openai_tool_name(name: str) -> str:
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:100:def _with_hash_suffix(base_name: str, raw_name: str) -> str:
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:109:def _to_openai_parameters_schema(schema: JsonObject, *, strict: bool) -> JsonObject:
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:139:def _make_property_nullable(schema: dict[str, Any]) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/tool_specs.py:149:def _schema_allows_null(schema: dict[str, Any]) -> bool:
+external/kaggle_jed/aicomp_sdk/agents/gemma_agent.py:45:def build_gemma_backend_config(
+external/kaggle_jed/aicomp_sdk/agents/gemma_agent.py:77:def build_gemma_backend(
+external/kaggle_jed/aicomp_sdk/agents/gemma_agent.py:108:def _build_gemma_request(
+external/kaggle_jed/aicomp_sdk/agents/gemma_agent.py:126:def _render_gemma_messages(
+external/kaggle_jed/aicomp_sdk/agents/gemma_agent.py:189:def _build_gemma_tool_instructions(tools: Sequence[AgentToolSpec]) -> str:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:86:def build_hf_response_parser(tokenizer: Any) -> HFResponseParser:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:93:def normalize_parsed_response(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:123:def normalize_tool_arguments(raw_arguments: Any) -> JsonObject:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:136:def _get_non_empty_string(value: object) -> str | None:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:143:def _extract_top_level_json_object(text: str) -> Mapping[str, object] | None:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:160:def tokenizer_supports_response_parsing(tokenizer: Any) -> bool:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:168:def _normalize_assistant_text(content: Any) -> str:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/response_parsing.py:176:def _normalize_tool_call(raw_tool_call: Any, *, fallback_call_id: str) -> ToolCall:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/transformers.py:10:def _resolve_hf_optional_override(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/transformers.py:23:def _build_hf_backend_config(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/llama_cpp.py:90:def _extract_completion_response(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/llama_cpp.py:121:def _extract_parsed_message(message: Mapping[str, Any]) -> Mapping[str, Any] | None:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/llama_cpp.py:133:def _to_openai_chat_completion_messages(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/llama_cpp.py:139:def _to_openai_chat_completion_message(message: Mapping[str, Any]) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/llama_cpp.py:157:def _to_openai_tool_calls(raw_tool_calls: Any) -> list[dict[str, Any]]:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/llama_cpp.py:164:def _to_openai_tool_call(raw_tool_call: Any) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/llama_cpp.py:183:def _to_openai_function_arguments(raw_arguments: Any) -> str:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/backends/processor.py:112:def _model_loader_kwargs(config: HFBackendConfig) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/types.py:142:def _validate_loader_kwarg_conflicts(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/agent.py:96:def _build_default_hf_request(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/agent.py:122:def _render_hf_messages(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/agent.py:169:def _render_hf_tools(tools: Sequence[AgentToolSpec]) -> list[JsonObject]:
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/agent.py:173:def _with_assistant_prefill(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/agent.py:195:def _relabel_hf_chat_template_snapshot(
+external/kaggle_jed/aicomp_sdk/agents/hf_chat_template/agent.py:207:def _unwrap_hf_chat_template_snapshot(
+external/kaggle_jed/aicomp_sdk/agents/factory.py:30:def coerce_agent_selection(value: str | AgentSelection) -> AgentSelection:
+external/kaggle_jed/aicomp_sdk/agents/factory.py:37:def _default_verbose() -> bool:
+external/kaggle_jed/aicomp_sdk/agents/factory.py:41:def _resolve_verbose(verbose: bool | None) -> bool:
+external/kaggle_jed/aicomp_sdk/agents/factory.py:47:def _require_openai_api_key() -> str:
+external/kaggle_jed/aicomp_sdk/agents/factory.py:54:def _create_openai_agent(
+external/kaggle_jed/aicomp_sdk/agents/factory.py:73:def _resolve_auto_factory(
+external/kaggle_jed/aicomp_sdk/agents/factory.py:91:def format_agent_selection(selection: AgentSelection) -> str:
+external/kaggle_jed/aicomp_sdk/agents/factory.py:105:def require_agent_selection_configuration(selection: AgentSelection) -> None:
+external/kaggle_jed/aicomp_sdk/agents/factory.py:119:def build_agent_factory(
+external/kaggle_jed/aicomp_sdk/agents/factory.py:150:def build_agent(
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:56:def build_gemma4_backend_config(
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:88:def build_gemma4_backend(
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:119:def _build_gemma4_request(
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:137:def _render_gemma4_messages(
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:200:def _parse_tool_response(output_text: str) -> object:
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:207:def build_gemma4_parser(parser_source: Any, *, model_id: str) -> HFResponseParser:
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:317:def _parse_gemma4_tool_call_response(
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:348:def _clean_fallback_assistant_text(text: str) -> str:
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:355:def _parse_gemma4_arguments(args_blob: str) -> JsonObject:
+external/kaggle_jed/aicomp_sdk/agents/gemma4_agent.py:377:def _cast_gemma4_argument(value: str) -> JsonValue:
+external/kaggle_jed/aicomp_sdk/agents/debug.py:81:def summarize_runtime_history(history: RuntimeHistory) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/debug.py:95:def make_json_safe(value: Any) -> Any:
+external/kaggle_jed/aicomp_sdk/agents/debug.py:121:def serialize_agent_decision(decision: AgentDecision) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/debug.py:137:def _serialize_debug_event(event: AgentDebugEvent) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/debug.py:154:def _history_event_kind(event: Any) -> str:
+external/kaggle_jed/aicomp_sdk/agents/debug.py:168:def _summarize_history_event(event: Any) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/agents/debug.py:192:def _preview_text(text: str) -> str:
+external/kaggle_jed/aicomp_sdk/agents/gpt_oss_agent.py:44:def build_gpt_oss_backend_config(
+external/kaggle_jed/aicomp_sdk/agents/gpt_oss_agent.py:76:def build_gpt_oss_backend(
+external/kaggle_jed/aicomp_sdk/agents/gpt_oss_agent.py:107:def build_gpt_oss_parser(tokenizer: Any, *, model_id: str) -> HFResponseParser:
+external/kaggle_jed/aicomp_sdk/agents/gpt_oss_agent.py:189:def _parse_gpt_oss_harmony_response(raw_text: str) -> dict[str, Any] | None:
+external/kaggle_jed/aicomp_sdk/cli/commands/options.py:13:def parse_positive_seconds(value: str) -> float:
+external/kaggle_jed/aicomp_sdk/cli/commands/options.py:23:def add_shared_execution_arguments(
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:18:def _load_json_result(path: Path) -> dict[str, Any] | None:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:33:def load_result(run_identifier: str) -> dict[str, Any] | None:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:70:def _metric_block_evaluated(block: Mapping[str, Any]) -> bool:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:74:def _display_metric(
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:85:def _append_not_evaluated_section(lines: list[str]) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:94:def _mark_axis_not_evaluated(ax, title: str) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:107:def _render_single_track_score_panel(ax, label: str, score: float) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:121:def create_markdown_report(result: Mapping[str, Any], output_path: Path) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:335:def create_matplotlib_visualizations(result: Mapping[str, Any], output_dir: Path) -> bool:
+external/kaggle_jed/aicomp_sdk/cli/commands/visualize.py:466:def run_visualize(args) -> int:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:54:def ensure_history_dir() -> Path:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:61:def generate_run_name(submission_name: str) -> str:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:68:def save_results(run_name: str, results: dict[str, Any]) -> Path:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:78:def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:117:def add_test_parser(
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:167:def _resolve_env_selection(requested_env: str | EnvSelection | None) -> EnvSelection:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:173:def _require_attack(execution: EvaluationExecution) -> AttackExecution:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:180:def _require_defense(execution: EvaluationExecution) -> DefenseExecution:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:187:def _print_progress_start(
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:206:def _print_progress_complete(execution: EvaluationExecution) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:235:def _run_evaluation_with_progress(
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:313:def run_redteam_evaluation_with_progress(
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:343:def run_defense_evaluation_with_progress(
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:373:def run_dual_evaluation_with_progress(
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:404:def _render_summary(results: dict[str, Any]) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/test.py:454:def run_test(args) -> int:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:25:def _parse_python_file(filepath: Path) -> ast.AST:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:29:def _class_base_names(node: ast.ClassDef) -> set[str]:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:39:def _resolve_sdk_imported_name(
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:64:def validate_python_syntax(filepath: Path) -> tuple[bool, str]:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:75:def validate_imports(filepath: Path) -> tuple[bool, list[str]]:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:107:def validate_attack_structure(filepath: Path) -> tuple[bool, list[str]]:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:151:def validate_guardrail_structure(filepath: Path) -> tuple[bool, list[str]]:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:194:def _validate_single_file(filepath: Path, submission_type: SubmissionType) -> int:
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:244:def _extract_zip_member(
+external/kaggle_jed/aicomp_sdk/cli/commands/validate.py:258:def run_validate(args) -> int:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:58:def _require_attack(execution: EvaluationExecution) -> AttackExecution:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:65:def _require_defense(execution: EvaluationExecution) -> DefenseExecution:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:82:def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:124:def _add_track_subparsers(parser: argparse.ArgumentParser) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:164:def add_evaluate_parser(
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:179:def _resolve_submission_path(raw_path: str) -> Path:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:186:def _build_submission_spec(track: EvaluationTrack, raw_path: str) -> SubmissionSpec:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:195:def _resolve_artifacts(raw_dir: str | None) -> EvaluatorArtifacts:
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:207:def _write_outputs(
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:230:def _render_summary(
+external/kaggle_jed/aicomp_sdk/cli/commands/evaluate.py:295:def run_evaluate(args: argparse.Namespace) -> int:
+external/kaggle_jed/aicomp_sdk/cli/commands/init.py:288:def run_init(args) -> int:
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:16:def _load_json_result(path: Path) -> dict[str, Any] | None:
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:31:def load_result(run_identifier: str) -> dict[str, Any] | None:
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:54:def format_delta(value: float, higher_is_better: bool = True) -> str:
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:81:def _metric_block_evaluated(block: Mapping[str, Any]) -> bool:
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:85:def _format_metric_value(
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:96:def _not_run_suffix(evaluated: bool) -> str:
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:102:def compare_metrics(
+external/kaggle_jed/aicomp_sdk/cli/commands/compare.py:288:def run_compare(args) -> int:
+external/kaggle_jed/aicomp_sdk/cli/commands/history.py:20:def load_all_results() -> list[dict[str, Any]]:
+external/kaggle_jed/aicomp_sdk/cli/commands/history.py:60:def format_timestamp(iso_timestamp: str) -> str:
+external/kaggle_jed/aicomp_sdk/cli/commands/history.py:69:def _metric_block_evaluated(block: Mapping[str, Any]) -> bool:
+external/kaggle_jed/aicomp_sdk/cli/commands/history.py:73:def _format_float_metric(block: Mapping[str, Any], key: str) -> str:
+external/kaggle_jed/aicomp_sdk/cli/commands/history.py:79:def _format_int_metric(block: Mapping[str, Any], key: str) -> str:
+external/kaggle_jed/aicomp_sdk/cli/commands/history.py:85:def print_results_table(results: Collection[Mapping[str, Any]]) -> None:
+external/kaggle_jed/aicomp_sdk/cli/commands/history.py:164:def run_history(args) -> int:
+external/kaggle_jed/aicomp_sdk/cli/main.py:18:def _load_rich_print() -> Callable[[str], None] | None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:66:def _print_message(
+external/kaggle_jed/aicomp_sdk/cli/main.py:81:def print_success(message: str) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:86:def print_error(message: str) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:91:def print_info(message: str) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:96:def print_warning(message: str) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:101:def _add_init_parser(subparsers: argparse._SubParsersAction) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:116:def _add_validate_parser(subparsers: argparse._SubParsersAction) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:152:def _add_compare_parser(subparsers: argparse._SubParsersAction) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:168:def _add_history_parser(subparsers: argparse._SubParsersAction) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:186:def _add_visualize_parser(subparsers: argparse._SubParsersAction) -> None:
+external/kaggle_jed/aicomp_sdk/cli/main.py:205:def create_parser() -> argparse.ArgumentParser:
+external/kaggle_jed/aicomp_sdk/cli/main.py:229:def _run_command(args: argparse.Namespace) -> int:
+external/kaggle_jed/aicomp_sdk/cli/main.py:264:def main() -> int:
+external/kaggle_jed/aicomp_sdk/hooks/lpci.py:9:def create_lpci_vector_store_hook() -> HookCallback:
+external/kaggle_jed/aicomp_sdk/hooks/lpci.py:35:def create_lpci_tool_poisoning_hook() -> HookCallback:
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:41:def _new_hook_state() -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:45:def _coerce_hook_state(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:52:def _payload_storage(hook_state: dict[str, Any]) -> list[dict[str, Any]]:
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:60:def _freeze_value(value: Any) -> Any:
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:72:def _copy_trace_snapshot(trace: Any | None) -> Any | None:
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:100:def _check_trigger(trigger: Mapping[str, Any], context: Mapping[str, Any]) -> bool:
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:125:def _retrieve_payloads(
+external/kaggle_jed/aicomp_sdk/hooks/registry.py:139:def _apply_modified_context(
+external/kaggle_jed/aicomp_sdk/hooks/helpers.py:11:def create_payload_injection_hook(
+external/kaggle_jed/aicomp_sdk/hooks/helpers.py:29:def create_trigger_hook(
+external/kaggle_jed/aicomp_sdk/hooks/helpers.py:47:def create_detection_hook(detector: Callable[[HookContext], bool]) -> HookCallback:
+external/kaggle_jed/aicomp_sdk/hooks/helpers.py:61:def create_memory_hook(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:84:def resolve_agent_factory(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:114:def _require_diagnostics(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:125:def _record_framework_phase_event(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:144:def _create_attack_eval_options(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:170:def _create_defense_run_options(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:195:def _execute_attack(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:249:def _execute_defense(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:306:def evaluate_redteam(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:387:def evaluate_defense(
+external/kaggle_jed/aicomp_sdk/evaluation/runner.py:473:def evaluate_dual(
+external/kaggle_jed/aicomp_sdk/evaluation/budget_policy.py:21:def resolve_budget_plan(
+external/kaggle_jed/aicomp_sdk/evaluation/budget_policy.py:49:def resolve_standalone_budget_plan(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:54:def _run_until_deadline(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:157:def _default_attack_eval_options(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:174:def _default_guardrail_challenge_config() -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:192:def _default_defense_run_options(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:206:def _validate_fixtures_dir(path: Path) -> tuple[bool, list[str]]:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:222:def resolve_fixtures_dir(fixtures_dir: Path | None = None) -> Path:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:279:def register_attack_guardrail_spec(spec: AttackGuardrailSpec) -> None:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:290:def _add_attack_guardrail_spec(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:302:def _load_entry_point_guardrail_spec(entry_point: Any) -> AttackGuardrailSpec:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:320:def resolve_attack_guardrail_spec(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:360:def register_defense_hook_spec(spec: DefenseHookSpec) -> None:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:371:def _add_defense_hook_spec(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:383:def _load_entry_point_hook_spec(entry_point: Any) -> DefenseHookSpec:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:401:def resolve_defense_hook_spec(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:440:def _build_hook_registry(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:449:def _benign_suite() -> list[str]:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:461:def _is_breach(trace: Mapping[str, Any], predicates: Iterable[Mapping[str, Any]]) -> bool:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:468:def _require_attack_class(attack_cls: Any) -> type[AttackAlgorithmBase]:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:476:def _validate_candidate_messages(candidate: AttackCandidate, index: int) -> tuple[str, ...]:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:498:def _replay_candidate_trace(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:536:def build_attack_env(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:583:def unique_cell_count(findings: Iterable[Mapping[str, Any]]) -> int:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:594:def unique_canonical_cell_count(findings: Iterable[Mapping[str, Any]]) -> int:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:605:def summarize_attack_findings(findings: list[ValidatedAttackFinding]) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:616:def eval_defense(
+external/kaggle_jed/aicomp_sdk/evaluation/ops.py:731:def eval_attack(
+external/kaggle_jed/aicomp_sdk/evaluation/diagnostics/event_log.py:39:def open_event_log_sink(path: Path) -> EventLogSink:
+external/kaggle_jed/aicomp_sdk/evaluation/diagnostics/event_log.py:51:def _json_safe_mapping(fields: Mapping[str, object]) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/diagnostics/event_log.py:55:def _json_safe(value: object) -> Any:
+external/kaggle_jed/aicomp_sdk/evaluation/diagnostics/diagnostics.py:26:def coerce_evaluator_verbosity(value: str | EvaluatorVerbosity) -> EvaluatorVerbosity:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:23:def _require_attack(execution: EvaluationExecution) -> AttackExecution:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:30:def _require_defense(execution: EvaluationExecution) -> DefenseExecution:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:37:def _format_attack_payload(
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:57:def _format_attack_metadata(attack: AttackExecution) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:65:def _format_defense_metadata(defense: DefenseExecution) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:72:def _format_defense_payload(
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:92:def _not_evaluated_attack_payload() -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:104:def _not_evaluated_defense_payload() -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:116:def build_evaluation_report(
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:138:def _build_evaluate_report(execution: EvaluationExecution) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/reports.py:203:def _build_test_report(execution: EvaluationExecution) -> dict[str, Any]:
+external/kaggle_jed/aicomp_sdk/evaluation/submissions.py:19:def _canonical_member_name(raw_name: str) -> str:
+external/kaggle_jed/aicomp_sdk/evaluation/submissions.py:34:def _find_member(zf: zipfile.ZipFile, expected: str) -> zipfile.ZipInfo | None:
+external/kaggle_jed/aicomp_sdk/evaluation/submissions.py:52:def load_module_from_file(
+external/kaggle_jed/aicomp_sdk/evaluation/submissions.py:88:def load_from_zip(
+external/kaggle_jed/aicomp_sdk/evaluation/submissions.py:114:def load_track_modules(
+external/kaggle_jed/aicomp_sdk/attacks/real_attack_detection.py:12:def detect_real_attacks(events: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+external/kaggle_jed/aicomp_sdk/attacks/baselines/attacker_goexplore.py:103:def _is_progress_reporter(value: object) -> bool:
