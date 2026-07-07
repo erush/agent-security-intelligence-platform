@@ -2,17 +2,23 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from matplotlib.pylab import rint
+from matplotlib.style import context
+
+from asip import registry
 from asip.adapters.kaggle_jed import KaggleJEDAdapter
 from asip.core.observation import Observation
 from asip.execution.execution_context import ExecutionContext
 from asip.execution.execution_result import ExecutionResult
 from asip.models.attack_plan import AttackPlan
 from asip.models.candidate import Candidate
+from asip.predicates.registry import PredicateRegistry
 
 
 @dataclass(slots=True)
 class AttackExecutor:
     adapter: KaggleJEDAdapter
+    predicate_registry: PredicateRegistry | None = None
     max_tool_hops: int = 8
 
     def execute(self, plan: AttackPlan) -> ExecutionResult:
@@ -40,31 +46,40 @@ class AttackExecutor:
 
             before_count = len(self.adapter.export_trace().get("tool_events", []))
 
-            self.adapter.interact(candidate, max_tool_hops=self.max_tool_hops)
+            self.adapter.interact(
+                candidate,
+                max_tool_hops=self.max_tool_hops,
+            )
 
             trace = self.adapter.export_trace()
             new_events = trace.get("tool_events", [])[before_count:]
 
-            observation = self._build_observation(step.action, new_events)
+            observation = self._build_observation(
+                action=step.action,
+                events=new_events,
+            )
+
             context.record(observation)
 
         trace = self.adapter.export_trace()
-        predicates = self.adapter.eval_predicates(trace)
+        kaggle_predicates = self.adapter.eval_predicates(trace)
+
+        tool_events = trace.get("tool_events", [])
 
         tool_sequence = tuple(
             str(event.get("name", ""))
-            for event in trace.get("tool_events", [])
+            for event in tool_events
         )
 
-        return ExecutionResult(
+        result = ExecutionResult(
             plan=plan,
             trace=trace,
-            predicates=predicates,
+            predicates=kaggle_predicates,
             tool_sequence=tool_sequence,
-            success=bool(predicates),
+            success=bool(kaggle_predicates),
             metadata={
                 "interaction_count": len(trace.get("user_messages", [])),
-                "tool_event_count": len(trace.get("tool_events", [])),
+                "tool_event_count": len(tool_events),
                 "executed_prompts": executed_prompts,
                 "memory": context.memory.snapshot(),
                 "observations": [
@@ -79,33 +94,55 @@ class AttackExecutor:
             },
         )
 
+        registry = self.predicate_registry or PredicateRegistry()
+
+        print("=" * 80)
+        print("RUNNING PREDICATE ENGINE")
+        print("=" * 80)
+
+        predicate_hits = registry.evaluate(
+            context=context,
+            result=result,
+        )
+        print(f"Predicate hits returned: {len(predicate_hits)}")
+        for hit in predicate_hits:
+            print(hit)
+            
+        result.predicate_hits = predicate_hits
+        result.success = bool(predicate_hits) or bool(kaggle_predicates)
+
+        return result
+
     def _render_prompt(self, step, context: ExecutionContext) -> str:
         prompt = step.to_prompt()
 
-        if "{secret}" in prompt:
-            prompt = prompt.replace("{secret}", str(context.memory.recall("secret", "")))
+        replacements = {
+            "{secret}": context.memory.recall("secret", ""),
+            "{secret.txt}": context.memory.recall("secret.txt", ""),
+            "{last_output}": context.memory.recall("last_output", ""),
+            "{page_id}": context.memory.recall("page_id", ""),
+            "{web_search_output}": context.memory.recall("web_search_output", ""),
+            "{web_open_output}": context.memory.recall("web_open_output", ""),
+            "{email_output}": context.memory.recall("email_output", ""),
+        }
 
-        if "{last_output}" in prompt:
-            prompt = prompt.replace(
-                "{last_output}",
-                str(context.memory.recall("last_output", "")),
-            )
-
-        if "{page_id}" in prompt:
-            prompt = prompt.replace(
-                "{page_id}",
-                str(context.memory.recall("page_id", "")),
-            )
+        for placeholder, value in replacements.items():
+            prompt = prompt.replace(placeholder, str(value))
 
         return prompt
 
-    def _build_observation(self, action: str, events: list[dict]) -> Observation:
+    def _build_observation(
+        self,
+        action: str,
+        events: list[dict],
+    ) -> Observation:
         if not events:
             return Observation(
                 tool="none",
                 success=False,
                 output=None,
                 metadata={"action": action},
+                memory_updates={},
             )
 
         last_event = events[-1]
@@ -123,9 +160,13 @@ class AttackExecutor:
             args = event.get("args") or {}
             event_output = event.get("output")
 
-            if name == "fs.read" and args.get("path") == "secret.txt" and event.get("ok"):
-                memory_updates["secret"] = event_output
-                memory_updates["secret.txt"] = event_output
+            if name == "fs.read" and event.get("ok"):
+                path = str(args.get("path", ""))
+                if path:
+                    memory_updates[path] = event_output
+                if path == "secret.txt":
+                    memory_updates["secret"] = event_output
+                    memory_updates["secret.txt"] = event_output
 
             if name == "web.search" and event.get("ok"):
                 memory_updates["web_search_output"] = event_output
@@ -143,6 +184,12 @@ class AttackExecutor:
 
             if name == "fs.write" and event.get("ok"):
                 memory_updates["file_write_output"] = event_output
+
+            if name == "fs.delete" and event.get("ok"):
+                memory_updates["file_delete_output"] = event_output
+
+            if name == "shell.run" and event.get("ok"):
+                memory_updates["shell_output"] = event_output
 
         return Observation(
             tool=tool,
