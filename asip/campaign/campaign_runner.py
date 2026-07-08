@@ -7,67 +7,92 @@ from asip.campaign.attack_campaign import AttackCampaign
 from asip.campaign.campaign_builder import CampaignBuilder
 from asip.execution.attack_executor import AttackExecutor
 from asip.models.attack_plan import AttackPlan
+
+from asip.search.archive import SearchArchive
+from asip.search.candidate_pool import CandidatePool
+from asip.search.novelty import NoveltyScorer
+from asip.search.search_engine import SearchEngine
+
 from asip.warehouse.builder_registry import BuilderRegistry
 from asip.warehouse.campaign_repository import CampaignRepository
 
+from asip.mutation.mutation_engine import MutationEngine
 
 @dataclass(slots=True)
 class CampaignRunner:
-    """
-    Executes an entire attack campaign.
-
-    Responsibilities
-    ----------------
-    1. Execute every attack plan.
-    2. Assess each execution.
-    3. Build campaign-level intelligence.
-    4. Persist campaign to the warehouse.
-    5. Refresh warehouse analytics.
-    """
-
     executor: AttackExecutor
     assessment_engine: AssessmentEngine
     campaign_builder: CampaignBuilder
     repository: CampaignRepository
+    builder_registry: BuilderRegistry
 
-    def __post_init__(self) -> None:
-        self.builder_registry = BuilderRegistry(self.repository)
+def run(
+    self,
+    goal: str,
+    plans: list[AttackPlan],
+    generations: int = 2,
+) -> AttackCampaign:
 
-    def run(
-        self,
-        goal: str,
-        plans: list[AttackPlan],
-    ) -> AttackCampaign:
+    search = SearchEngine(
+        executor=self.executor,
+        archive=SearchArchive(),
+        novelty=NoveltyScorer(),
+        pool=CandidatePool(),
+        mutation_engine=MutationEngine(),
+    )
 
-        executions = []
+    pool = search.execute(
+        plans=plans,
+        generations=generations,
+    )
 
-        for plan in plans:
+    executions = []
 
-            result = self.executor.execute(plan)
+    for result in pool.candidates:
 
-            result.assessment = self.assessment_engine.assess(
-                result
-            )
-
-            executions.append(result)
-
-        campaign = self.campaign_builder.build(
-            goal=goal,
-            results=executions,
+        result.assessment = self.assessment_engine.assess(
+            result
         )
 
-        self.repository.save_campaign(campaign)
+        assessment_score = (
+            result.assessment.score
+            if result.assessment
+            else 0.0
+        )
 
-        self.refresh_warehouse()
+        novelty_score = result.metadata.get(
+            "novelty_score",
+            0.0,
+        )
 
-        return campaign
+        result.metadata["ranking_score"] = (
+            assessment_score
+            + novelty_score
+        )
 
-    def refresh_warehouse(self) -> None:
-        """
-        Refresh every warehouse analytics table.
+        executions.append(result)
 
-        CampaignRunner should not know individual builders.
-        The BuilderRegistry owns analytics orchestration.
-        """
+    executions.sort(
+        key=lambda r: r.metadata.get(
+            "ranking_score",
+            0.0,
+        ),
+        reverse=True,
+    )
 
-        self.builder_registry.refresh()
+    campaign = self.campaign_builder.build(
+        goal=goal,
+        results=executions,
+    )
+
+    campaign.metadata["archive"] = (
+        search.archive_summary()
+    )
+
+    self.repository.save_campaign(campaign)
+
+    self.builder_registry.refresh_all(
+        self.repository
+    )
+
+    return campaign
