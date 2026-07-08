@@ -17,4 +17,5 @@ class ExecutionResult:
     success: bool = False
     predicate_hits: list[PredicateHit] = field(default_factory=list)
     findings: list[AttackFinding] = field(default_factory=list)
+    assessment: Any | None = None
     metadata: dict[str, Any] = field(default_factory=dict)

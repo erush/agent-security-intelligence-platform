@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from asip.assessment.attack_assessment import AttackAssessment
 from asip.execution.execution_result import ExecutionResult
-from asip.graph.graph_builder import AttackGraphBuilder
 
 
 SEVERITY_SCORE = {
@@ -14,12 +13,11 @@ SEVERITY_SCORE = {
 }
 
 SEVERITY_RANK = {
-    "none": 0,
-    "info": 1,
-    "low": 2,
-    "medium": 3,
-    "high": 4,
-    "critical": 5,
+    "info": 0,
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "critical": 4,
 }
 
 
@@ -34,7 +32,6 @@ class AssessmentEngine:
                 success=False,
                 attack_chain=[],
                 findings=[],
-                attack_graph=AttackGraphBuilder().build([]),
                 rationale=["No attack findings detected."],
                 metadata={
                     "finding_count": 0,
@@ -42,8 +39,13 @@ class AssessmentEngine:
                 },
             )
 
-        attack_graph = AttackGraphBuilder().build(findings)
-        attack_chain = attack_graph.chain()
+        attack_chain = [
+            finding.predicate
+            for finding in sorted(
+                findings,
+                key=lambda finding: finding.first_event_index,
+            )
+        ]
 
         max_severity = max(
             (finding.severity for finding in findings),
@@ -78,8 +80,6 @@ class AssessmentEngine:
             f"Detected {len(findings)} unique attack findings.",
             f"Highest severity finding: {max_severity}.",
             f"Attack chain: {' -> '.join(attack_chain)}.",
-            f"Attack graph nodes: {len(attack_graph.nodes)}.",
-            f"Attack graph edges: {len(attack_graph.edges)}.",
         ]
 
         return AttackAssessment(
@@ -88,13 +88,10 @@ class AssessmentEngine:
             success=score >= 6.0,
             attack_chain=attack_chain,
             findings=findings,
-            attack_graph=attack_graph,
             rationale=rationale,
             metadata={
                 "finding_count": len(findings),
                 "predicate_hit_count": len(result.predicate_hits),
                 "unique_predicates": sorted(set(attack_chain)),
-                "entry_points": attack_graph.entry_points,
-                "terminal_nodes": attack_graph.terminal_nodes,
             },
         )

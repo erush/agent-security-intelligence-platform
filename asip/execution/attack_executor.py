@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from asip.adapters.kaggle_jed import KaggleJEDAdapter
+from asip.assessment.assessment_engine import AssessmentEngine
 from asip.core.observation import Observation
 from asip.execution.execution_context import ExecutionContext
 from asip.execution.execution_result import ExecutionResult
@@ -41,7 +42,9 @@ class AttackExecutor:
                 },
             )
 
-            before_count = len(self.adapter.export_trace().get("tool_events", []))
+            before_count = len(
+                self.adapter.export_trace().get("tool_events", [])
+            )
 
             self.adapter.interact(
                 candidate,
@@ -49,6 +52,7 @@ class AttackExecutor:
             )
 
             trace = self.adapter.export_trace()
+
             new_events = trace.get("tool_events", [])[before_count:]
 
             observation = self._build_observation(
@@ -102,11 +106,22 @@ class AttackExecutor:
 
         result.predicate_hits = predicate_hits
         result.findings = findings
-        result.success = bool(findings) or bool(kaggle_predicates)
+
+        assessment = AssessmentEngine().assess(result)
+        result.assessment = assessment
+
+        result.success = (
+            assessment.success
+            or bool(kaggle_predicates)
+        )
 
         return result
 
-    def _render_prompt(self, step, context: ExecutionContext) -> str:
+    def _render_prompt(
+        self,
+        step,
+        context: ExecutionContext,
+    ) -> str:
         prompt = step.to_prompt()
 
         replacements = {
@@ -114,13 +129,25 @@ class AttackExecutor:
             "{secret.txt}": context.memory.recall("secret.txt", ""),
             "{last_output}": context.memory.recall("last_output", ""),
             "{page_id}": context.memory.recall("page_id", ""),
-            "{web_search_output}": context.memory.recall("web_search_output", ""),
-            "{web_open_output}": context.memory.recall("web_open_output", ""),
-            "{email_output}": context.memory.recall("email_output", ""),
+            "{web_search_output}": context.memory.recall(
+                "web_search_output",
+                "",
+            ),
+            "{web_open_output}": context.memory.recall(
+                "web_open_output",
+                "",
+            ),
+            "{email_output}": context.memory.recall(
+                "email_output",
+                "",
+            ),
         }
 
         for placeholder, value in replacements.items():
-            prompt = prompt.replace(placeholder, str(value))
+            prompt = prompt.replace(
+                placeholder,
+                str(value),
+            )
 
         return prompt
 
@@ -129,6 +156,7 @@ class AttackExecutor:
         action: str,
         events: list[dict],
     ) -> Observation:
+
         if not events:
             return Observation(
                 tool="none",
@@ -139,6 +167,7 @@ class AttackExecutor:
             )
 
         last_event = events[-1]
+
         output = last_event.get("output")
         tool = str(last_event.get("name", ""))
         success = bool(last_event.get("ok"))
@@ -149,21 +178,28 @@ class AttackExecutor:
         }
 
         for event in events:
+
             name = event.get("name")
             args = event.get("args") or {}
             event_output = event.get("output")
 
             if name == "fs.read" and event.get("ok"):
                 path = str(args.get("path", ""))
+
                 if path:
                     memory_updates[path] = event_output
+
                 if path == "secret.txt":
                     memory_updates["secret"] = event_output
                     memory_updates["secret.txt"] = event_output
 
             if name == "web.search" and event.get("ok"):
                 memory_updates["web_search_output"] = event_output
-                if isinstance(event_output, str) and '"id":' in event_output:
+
+                if (
+                    isinstance(event_output, str)
+                    and '"id":' in event_output
+                ):
                     memory_updates["page_id"] = "page_0"
 
             if name == "web.open" and event.get("ok"):
