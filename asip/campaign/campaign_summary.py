@@ -21,7 +21,9 @@ class CampaignSummary:
     total_attacks: int = 0
     successful_attacks: int = 0
     failed_attacks: int = 0
+
     success_rate: float = 0.0
+    failure_rate: float = 0.0
 
     average_score: float = 0.0
     campaign_risk_score: float = 0.0
@@ -34,31 +36,44 @@ class CampaignSummary:
     # Evolution
     generations: int = 0
     population_size: int = 0
+
     unique_programs: int = 0
     unique_families: int = 0
-
-    best_fitness: float = 0.0
-    average_fitness: float = 0.0
-    average_diversity: float = 0.0
-    average_novelty: float = 0.0
-
-    mutation_count: int = 0
-    crossover_count: int = 0
-
     unique_findings: int = 0
     unique_predicates: int = 0
     unique_tool_sequences: int = 0
 
+    best_fitness: float | None = None
+    average_fitness: float | None = None
+    average_diversity: float | None = None
+    average_novelty: float | None = None
+
+    mutation_count: int = 0
+    crossover_count: int = 0
+
     lineage_depth: int = 0
     best_generation: int = 0
     best_program: str | None = None
+
+    # Frequencies
+    family_frequency: dict[str, int] = field(default_factory=dict)
+    mutation_frequency: dict[str, int] = field(default_factory=dict)
+    crossover_frequency: dict[str, int] = field(default_factory=dict)
+    generation_frequency: dict[int, int] = field(default_factory=dict)
+
+    # Histories
+    fitness_history: list[float] = field(default_factory=list)
+    diversity_history: list[float] = field(default_factory=list)
+
+    # Lineage
+    lineage: list[dict] = field(default_factory=list)
 
     # Narrative
     executive_summary: list[str] = field(default_factory=list)
     key_findings: list[str] = field(default_factory=list)
     recommendations: list[str] = field(default_factory=list)
 
-    # Evolution reporting
+    # Reporting
     generation_summary: list[dict] = field(default_factory=list)
     mutation_summary: list[dict] = field(default_factory=list)
     crossover_summary: list[dict] = field(default_factory=list)

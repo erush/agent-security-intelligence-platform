@@ -58,6 +58,10 @@ class ProgramExecutor:
 
         result = self.executor.execute(plan)
 
+        # Preserve the originating program for downstream
+        # evolution, fitness evaluation, campaign reporting,
+        # and Kaggle candidate export.
+        result.metadata["attack_program"] = program
         result.metadata["program_name"] = program.name
         result.metadata["program_id"] = program.program_id
         result.metadata["program_metadata"] = dict(
@@ -107,26 +111,43 @@ class ProgramExecutor:
 
         successes = sum(
             1
-            for r in results
-            if r.success
+            for result in results
+            if result.success
         )
 
         findings = sum(
-            len(r.findings)
-            for r in results
+            len(result.findings)
+            for result in results
         )
 
         predicates = sum(
-            len(r.predicate_hits)
-            for r in results
+            len(result.predicate_hits)
+            for result in results
         )
 
         average_score = (
             sum(
-                r.assessment.score
-                if r.assessment
-                else 0.0
-                for r in results
+                (
+                    result.assessment.score
+                    if result.assessment
+                    else 0.0
+                )
+                for result in results
+            )
+            / len(results)
+            if results
+            else 0.0
+        )
+
+        average_fitness = (
+            sum(
+                float(
+                    result.metadata.get(
+                        "fitness",
+                        0.0,
+                    )
+                )
+                for result in results
             )
             / len(results)
             if results
@@ -144,4 +165,5 @@ class ProgramExecutor:
             "findings": findings,
             "predicate_hits": predicates,
             "average_score": average_score,
+            "average_fitness": average_fitness,
         }

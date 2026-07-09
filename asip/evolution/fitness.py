@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from asip.compiler.attack_program import AttackProgram
 from asip.evolution.diversity import DiversityEvaluator
@@ -18,7 +18,9 @@ class FitnessEvaluator:
     diversity_weight: float = 4.0
     duplicate_penalty: float = 1.5
 
-    diversity: DiversityEvaluator = DiversityEvaluator()
+    diversity: DiversityEvaluator = field(
+        default_factory=DiversityEvaluator,
+    )
 
     def evaluate(
         self,
