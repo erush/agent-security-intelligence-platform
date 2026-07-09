@@ -2,26 +2,28 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from asip.compiler.attack_program import AttackProgram
+from asip.evolution.diversity import DiversityEvaluator
 from asip.execution.execution_result import ExecutionResult
 
 
 @dataclass(slots=True)
 class FitnessEvaluator:
-    """
-    Central scoring policy for evolutionary attack search.
-
-    Higher fitness means the execution is more valuable for the next generation.
-    """
-
-    assessment_weight: float = 1.0
-    novelty_weight: float = 1.0
-    predicate_weight: float = 1.0
+    assessment_weight: float = 3.0
+    predicate_weight: float = 2.0
     finding_weight: float = 2.0
-    success_bonus: float = 5.0
+    tool_weight: float = 1.0
+    replay_weight: float = 1.5
+    novelty_weight: float = 2.0
+    diversity_weight: float = 4.0
+    duplicate_penalty: float = 1.5
+
+    diversity: DiversityEvaluator = DiversityEvaluator()
 
     def evaluate(
         self,
         result: ExecutionResult,
+        population: list[AttackProgram] | None = None,
     ) -> float:
         assessment_score = (
             result.assessment.score
@@ -29,68 +31,99 @@ class FitnessEvaluator:
             else 0.0
         )
 
+        predicate_score = float(len(result.predicate_hits))
+        finding_score = float(len(result.findings))
+        tool_score = float(len(set(result.tool_sequence)))
+
+        replay_score = 1.0 if result.success else 0.0
+
         novelty_score = float(
             result.metadata.get("novelty_score", 0.0)
         )
 
-        predicate_score = float(
-            len(result.predicate_hits)
+        duplicate_score = float(
+            result.metadata.get("duplicate_count", 0.0)
         )
 
-        finding_score = float(
-            len(result.findings)
-        )
-
-        success_score = (
-            self.success_bonus
-            if result.success
-            else 0.0
-        )
-
-        fitness = (
-            assessment_score * self.assessment_weight
-            + novelty_score * self.novelty_weight
-            + predicate_score * self.predicate_weight
-            + finding_score * self.finding_weight
-            + success_score
-        )
-
-        result.metadata["fitness"] = fitness
+        diversity_score = 0.0
 
         program = result.metadata.get("attack_program")
 
-        if program is not None:
+        if isinstance(program, AttackProgram) and population:
+            diversity_score = self.diversity.score(
+                program,
+                population,
+            )
+
+        fitness = (
+            assessment_score * self.assessment_weight
+            + predicate_score * self.predicate_weight
+            + finding_score * self.finding_weight
+            + tool_score * self.tool_weight
+            + replay_score * self.replay_weight
+            + novelty_score * self.novelty_weight
+            + diversity_score * self.diversity_weight
+            - duplicate_score * self.duplicate_penalty
+        )
+
+        result.metadata["fitness"] = fitness
+        result.metadata["diversity_score"] = diversity_score
+
+        if isinstance(program, AttackProgram):
             program.metadata["fitness"] = fitness
             program.metadata["last_score"] = assessment_score
             program.metadata["last_success"] = result.success
             program.metadata["last_predicates"] = len(result.predicate_hits)
             program.metadata["last_findings"] = len(result.findings)
+            program.metadata["last_diversity"] = diversity_score
 
         return fitness
 
-    def evaluate_many(
+    def rank(
         self,
         results: list[ExecutionResult],
-    ) -> list[float]:
-        return [
-            self.evaluate(result)
-            for result in results
-        ]
-
-    def best(
-        self,
-        results: list[ExecutionResult],
-    ) -> ExecutionResult | None:
-        if not results:
-            return None
-
+        population: list[AttackProgram] | None = None,
+    ) -> list[ExecutionResult]:
         for result in results:
-            if "fitness" not in result.metadata:
-                self.evaluate(result)
+            self.evaluate(
+                result,
+                population=population,
+            )
 
-        return max(
+        return sorted(
             results,
             key=lambda r: float(
                 r.metadata.get("fitness", 0.0)
             ),
+            reverse=True,
         )
+
+    def best(
+        self,
+        results: list[ExecutionResult],
+        population: list[AttackProgram] | None = None,
+    ) -> ExecutionResult | None:
+        ranked = self.rank(
+            results,
+            population=population,
+        )
+
+        return ranked[0] if ranked else None
+
+    def average(
+        self,
+        results: list[ExecutionResult],
+        population: list[AttackProgram] | None = None,
+    ) -> float:
+        if not results:
+            return 0.0
+
+        ranked = self.rank(
+            results,
+            population=population,
+        )
+
+        return sum(
+            float(result.metadata.get("fitness", 0.0))
+            for result in ranked
+        ) / len(ranked)

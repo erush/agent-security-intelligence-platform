@@ -4,29 +4,32 @@ from dataclasses import dataclass, field
 
 from asip.compiler.attack_program import AttackProgram
 from asip.compiler.program_generator import ProgramGenerator
+from asip.evolution.crossover import ProgramCrossover
 from asip.evolution.fitness import FitnessEvaluator
 from asip.evolution.mutation_policy import MutationPolicy
 from asip.evolution.selection import SelectionPolicy
-from asip.execution.program_executor import ProgramExecutor
 from asip.execution.execution_result import ExecutionResult
+from asip.execution.program_executor import ProgramExecutor
 
 
 @dataclass(slots=True)
 class EvolutionEngine:
     """
-    Evolves AttackPrograms using compiler-driven evolutionary search.
+    Compiler-driven evolutionary search engine.
 
-    Population
-        ↓
-    Execute
-        ↓
-    Evaluate
-        ↓
-    Select
-        ↓
-    Mutate
-        ↓
-    Repeat
+    ProgramGenerator
+            ↓
+    ProgramExecutor
+            ↓
+    FitnessEvaluator
+            ↓
+    SelectionPolicy
+            ↓
+    ProgramCrossover
+            ↓
+    MutationPolicy
+            ↓
+    Next Generation
     """
 
     executor: ProgramExecutor
@@ -43,9 +46,15 @@ class EvolutionEngine:
         default_factory=SelectionPolicy,
     )
 
+    crossover: ProgramCrossover = field(
+        default_factory=ProgramCrossover,
+    )
+
     mutation: MutationPolicy = field(
         default_factory=MutationPolicy,
     )
+
+    ##################################################################
 
     def evolve(
         self,
@@ -54,31 +63,55 @@ class EvolutionEngine:
     ) -> list[ExecutionResult]:
 
         population = self.generator.generate_population(
-            population_size,
+            population_size
         )
 
-        best_results: list[ExecutionResult] = []
+        return self.evolve_population(
+            population=population,
+            generations=generations,
+        )
+
+    ##################################################################
+
+    def evolve_population(
+        self,
+        population: list[AttackProgram],
+        generations: int,
+    ) -> list[ExecutionResult]:
+
+        archive: list[ExecutionResult] = []
+
+        current_population = list(population)
 
         for generation in range(generations):
 
             results = self._execute_population(
-                population,
+                current_population,
                 generation,
             )
 
-            ranked = self.fitness.rank(results)
+            ranked = self.fitness.rank(
+                results,
+                population=current_population,
+            )
 
-            best_results.extend(ranked)
+            archive.extend(ranked)
 
             survivors = self.selection.select(
                 ranked,
             )
 
-            population = self._next_generation(
+            current_population = self._next_generation(
                 survivors,
             )
 
-        return self.fitness.rank(best_results)
+            if not current_population:
+                break
+
+        return self.fitness.rank(
+            archive,
+            population=population,
+        )
 
     ##################################################################
 
@@ -92,11 +125,10 @@ class EvolutionEngine:
 
         for program in population:
 
-            result = self.executor.execute(
-                program,
-            )
+            result = self.executor.execute(program)
 
             result.metadata["generation"] = generation
+            result.metadata["attack_program"] = program
 
             results.append(result)
 
@@ -109,70 +141,116 @@ class EvolutionEngine:
         survivors: list[ExecutionResult],
     ) -> list[AttackProgram]:
 
-        population: list[AttackProgram] = []
+        parents = [
+            result.metadata["attack_program"]
+            for result in survivors
+            if "attack_program" in result.metadata
+        ]
 
-        for result in survivors:
+        if not parents:
+            return []
 
-            program = result.metadata.get(
-                "attack_program"
-            )
+        children: list[AttackProgram] = []
 
-            if program is None:
-                continue
+        while len(children) < len(parents):
 
-            population.append(
-                self.mutation.mutate(program)
-            )
+            if len(parents) == 1:
 
-        return population
+                child = self.mutation.mutate(
+                    parents[0]
+                )
+
+            else:
+
+                parent_a = parents[
+                    len(children) % len(parents)
+                ]
+
+                parent_b = parents[
+                    (len(children) + 1)
+                    % len(parents)
+                ]
+
+                child = self.crossover.crossover(
+                    parent_a,
+                    parent_b,
+                )
+
+                child = self.mutation.mutate(
+                    child
+                )
+
+            children.append(child)
+
+        return children
 
     ##################################################################
 
-    def evolve_population(
+    def generation_summary(
         self,
-        population: list[AttackProgram],
-        generations: int,
-    ) -> list[ExecutionResult]:
+        results: list[ExecutionResult],
+    ) -> dict:
 
-        best: list[ExecutionResult] = []
+        if not results:
 
-        current = population
+            return {
+                "population": 0,
+                "best_fitness": 0.0,
+                "average_fitness": 0.0,
+                "successful": 0,
+            }
 
-        for generation in range(generations):
+        ranked = self.fitness.rank(results)
 
-            results = self._execute_population(
-                current,
-                generation,
+        best = ranked[0]
+
+        average = (
+            sum(
+                float(
+                    r.metadata.get(
+                        "fitness",
+                        0.0,
+                    )
+                )
+                for r in ranked
             )
+            / len(ranked)
+        )
 
-            ranked = self.fitness.rank(results)
-
-            best.extend(ranked)
-
-            survivors = self.selection.select(
-                ranked,
-            )
-
-            current = self._next_generation(
-                survivors,
-            )
-
-        return self.fitness.rank(best)
+        return {
+            "population": len(ranked),
+            "successful": sum(
+                r.success
+                for r in ranked
+            ),
+            "best_fitness": float(
+                best.metadata.get(
+                    "fitness",
+                    0.0,
+                )
+            ),
+            "average_fitness": average,
+            "best_program": best.metadata[
+                "attack_program"
+            ].name,
+            "best_findings": len(
+                best.findings
+            ),
+            "best_predicates": len(
+                best.predicate_hits
+            ),
+        }
 
     ##################################################################
 
-    @staticmethod
     def best(
+        self,
         results: list[ExecutionResult],
     ) -> ExecutionResult | None:
 
-        if not results:
+        ranked = self.fitness.rank(results)
+
+        if not ranked:
             return None
 
-        return max(
-            results,
-            key=lambda r: r.metadata.get(
-                "fitness",
-                0.0,
-            ),
-        )
+        return ranked[0]
